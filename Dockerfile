@@ -1,55 +1,96 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-focal
+FROM jupyter/base-notebook:latest
 
-ARG HTTP_PORT_RANGE=1100-1200
+# Install .NET CLI dependencies
 
-# Opt out of telemetry until after we install jupyter when building the image, this prevents caching of machine id
-ENV DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT=true
+ARG NB_USER=jovyan
+ARG NB_UID=1000
+ENV USER ${NB_USER}
+ENV NB_UID ${NB_UID}
+ENV HOME /home/${NB_USER}
 
-# Install all OS dependencies for notebook server that starts but lacks all
-# features (e.g., download as all possible file formats)
+WORKDIR ${HOME}
 
-ENV DEBIAN_FRONTEND noninteractive
+USER root
+RUN apt-get update
+RUN apt-get install -y curl
+
+ENV \
+    # Enable detection of running in a container
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    # Enable correct mode for dotnet watch (only mode supported in a container)
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    # Skip extraction of XML docs - generally not useful within an image/container - helps performance
+    NUGET_XMLDOC_MODE=skip \
+    # Opt out of telemetry until after we install jupyter when building the image, this prevents caching of machine id
+    DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT=true
+
+# Install .NET CLI dependencies
 RUN apt-get update \
- && apt-get install -yq --no-install-recommends \
-    wget \
-    bzip2 \
-    ca-certificates \
-    sudo \
-    locales \
-    fonts-liberation \
-    run-one \
-    python3.8 \
-    python3-pip \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libicu66 \
+        libssl1.1 \
+        libstdc++6 \
+        zlib1g \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+# Install .NET Core SDK
 
-RUN python3 -m pip install setuptools
-RUN python3 -m pip install jupyter
-RUN python3 -m pip install jupyterlab
+# When updating the SDK version, the sha512 value a few lines down must also be updated.
+ENV DOTNET_SDK_VERSION 5.0.102
 
+RUN dotnet_sdk_version=5.0.102 \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/$dotnet_sdk_version/dotnet-sdk-$dotnet_sdk_version-linux-x64.tar.gz \
+    && dotnet_sha512='0ce2d5365ca39808fb71baec4584d4ec786491c3735543dc93244604ea97e242377d0987cd8b1e529258dee68f203b5780559201e7ea6d84487d6d8d433329b3' \
+    && echo "$dotnet_sha512 dotnet.tar.gz" | sha512sum -c - \
+    && mkdir -p /usr/share/dotnet \
+    && tar -ozxf dotnet.tar.gz -C /usr/share/dotnet \
+    && rm dotnet.tar.gz \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    # Trigger first run experience by running arbitrary cmd
+    && dotnet help
+
+# Copy notebooks
+COPY ./notebooks/ ${HOME}/Notebooks/
 
 # Add package sources
-RUN dotnet nuget add source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" -n "dotnet-tools"
-RUN dotnet nuget add source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json" -n "dotnet5"
-RUN dotnet nuget add source "https://pkgs.dev.azure.com/dnceng/public/_packaging/MachineLearning/nuget/v3/index.json" -n "MachineLearning"
+RUN echo "\
+<configuration>\
+  <solution>\
+    <add key=\"disableSourceControlIntegration\" value=\"true\" />\
+  </solution>\
+  <packageSources>\
+    <clear />\
+    <add key=\"dotnet-public\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json\" />\
+    <add key=\"dotnet-eng\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json\" />\
+    <add key=\"dotnet-tools\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json\" />\
+    <add key=\"dotnet-libraries\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-libraries/nuget/v3/index.json\" />\
+    <add key=\"dotnet5\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json\" />\
+    <add key=\"MachineLearning\" value=\"https://pkgs.dev.azure.com/dnceng/public/_packaging/MachineLearning/nuget/v3/index.json\" />\
+  </packageSources>\
+  <disabledPackageSources />\
+</configuration>\
+" > ${HOME}/NuGet.config
 
+RUN chown -R ${NB_UID} ${HOME}
+USER ${USER}
 
-# Install lastest build from master branch of Microsoft.DotNet.Interactive
-RUN dotnet tool install --tool-path /usr/share/dotnet-interactive Microsoft.dotnet-interactive --add-source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json"
-RUN ln -s /usr/share/dotnet-interactive/dotnet-interactive /usr/bin/dotnet-interactive
-RUN dotnet interactive jupyter install --http-port-range ${HTTP_PORT_RANGE}
+#Install nteract 
+RUN pip install nteract_on_jupyter
+
+# Install lastest build from main branch of Microsoft.DotNet.Interactive
+RUN dotnet tool install -g Microsoft.dotnet-interactive --add-source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json"
+
+ENV PATH="${PATH}:${HOME}/.dotnet/tools"
+RUN echo "$PATH"
+
+# Install kernel specs
+RUN dotnet interactive jupyter install
 
 # Enable telemetry once we install jupyter for the image
 ENV DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT=false
 
-
-EXPOSE 8888
-EXPOSE ${HTTP_PORT_RANGE}
-
-RUN mkdir notebooks
-
-WORKDIR notebooks
-
-ENTRYPOINT jupyter lab --ip=0.0.0.0  --allow-root  --notebook-dir=/notebooks/
+# Set root to Notebooks
+WORKDIR ${HOME}/Notebooks/
