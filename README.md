@@ -1,6 +1,8 @@
 # fsharp-binder-template
 Hit the ground running with a basic template for F# notebooks on binder.
+
 Try out this template on binder:
+
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jovaneyck/fsharp-binder-template/HEAD)
 
 ## How to use
