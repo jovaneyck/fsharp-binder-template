@@ -7,7 +7,8 @@ Try out this template on binder:
 
 ## How to use
 
-1. fork this repository
+1. [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this repository
 2. add your notebooks in the "notebooks" folder. There's some examples availble for you.
-3. go to [mybinder.org](https://mybinder.org/), paste the url of your forked repository and "launch".
-4. have fun with your online Jupyter notebooks with F# support ♥
+3. [commit](https://github.com/git-guides/git-commit) and [push](https://github.com/git-guides/git-push) your changes
+4. go to [mybinder.org](https://mybinder.org/), paste the url of your forked repository and "launch".
+5. have fun with your online Jupyter notebooks with F# support ♥
