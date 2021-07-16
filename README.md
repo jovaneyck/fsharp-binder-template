@@ -10,4 +10,4 @@ Try out this template on binder:
 1. [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this repository
 2. add your notebooks in the "notebooks" folder. There's some examples availble for you.
 4. go to [mybinder.org](https://mybinder.org/), paste the url of your forked repository and "launch".
-5. have fun with your online Jupyter notebooks with F# support ♥
+5. have fun with your online interactive Jupyter notebooks with F# support ♥
