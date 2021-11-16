@@ -1,3 +1,5 @@
+#Hello, I come from the dotnet/interactive github repository on
+#https://github.com/dotnet/interactive/blob/main/Dockerfile
 FROM jupyter/base-notebook:latest
 
 # Install .NET CLI dependencies
