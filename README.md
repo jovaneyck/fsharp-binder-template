@@ -1,7 +1,7 @@
 # fsharp-binder-template
 Hit the ground running with a basic template for F# [Jupyter notebooks](https://jupyter.org/) on [binder](https://mybinder.org/).
 
-With support for F# 6
+Supports F# 6 💪
 
 Try out this template on binder:
 
