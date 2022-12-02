@@ -45,7 +45,7 @@ RUN curl -L https://dot.net/v1/dotnet-install.sh | bash -e -s -- --install-dir /
 RUN dotnet help
 
 # Copy notebooks
-COPY ./samples/notebooks/ ${HOME}/Notebooks/
+COPY ./notebooks/ ${HOME}/Notebooks/
 
 # Add package sources
 RUN echo "\
