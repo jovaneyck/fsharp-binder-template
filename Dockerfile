@@ -37,7 +37,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Install the appropriate dotnet SDK
-ENV DOTNET_SDK_VERSION 7.0.100
+ENV DOTNET_SDK_VERSION 8.0.200
 RUN curl -L https://dot.net/v1/dotnet-install.sh | bash -e -s -- --install-dir /usr/share/dotnet --version $DOTNET_SDK_VERSION \
   && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
