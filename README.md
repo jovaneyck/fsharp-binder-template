@@ -14,3 +14,6 @@ Try out this template on binder:
 2. add your notebooks in the "notebooks" folder. There's some examples available
 4. go to [mybinder.org](https://mybinder.org/), paste the url of your forked repository and hit "launch"
 5. have fun with your online interactive Jupyter notebooks with F# support ♥
+
+## Read more about it
+On my blog [jovaneyck.be - f# notebooks](https://jvaneyck.wordpress.com/2021/07/16/fsharp-notebooks/)
