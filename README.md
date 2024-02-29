@@ -16,4 +16,4 @@ Try out this template on binder:
 5. have fun with your online interactive Jupyter notebooks with F# support ♥
 
 ## Read more about it
-On my blog [jovaneyck.be - f# notebooks](https://jvaneyck.wordpress.com/2021/07/16/fsharp-notebooks/)
+On my blog [jovaneyck.be - F# notebooks](https://jvaneyck.wordpress.com/2021/07/16/fsharp-notebooks/)
