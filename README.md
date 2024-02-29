@@ -2,7 +2,7 @@
 
 Hit the ground running with a basic template for F# [Jupyter notebooks](https://jupyter.org/) on [binder](https://mybinder.org/).
 
-Supports F# 7 💪
+Supports F# 8 💪
 
 Try out this template on binder:
 
