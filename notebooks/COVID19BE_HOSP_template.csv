@@ -1,0 +1,4 @@
+"DATE","PROVINCE","REGION","NR_REPORTING","TOTAL_IN","TOTAL_IN_ICU","NEW_IN","NEW_IN_ICU","TOTAL_IN_RESP","TOTAL_IN_ECMO"
+2023-05-17,"Antwerpen","Flanders",14,NA,NA,10,10,NA,NA
+2020-03-06,"Luxembourg","Wallonia",1,1,0,0,0,0,0
+2023-06-27,"WestVlaanderen","Flanders",11,8,0,0,0,NA,NA
