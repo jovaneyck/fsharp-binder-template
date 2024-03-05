@@ -17,3 +17,21 @@ Try out this template on binder:
 
 ## Read more about it
 On my blog [jovaneyck.be - F# notebooks](https://jvaneyck.wordpress.com/2021/07/16/fsharp-notebooks/)
+
+## Running the docker image locally
+
+```bash
+docker build . -t binder
+docker run -p8888:8888 binder
+
+#browse to the 127.0.0.1 url provided in the logs, e.g. http://127.0.0.1:8888/lab?token=4fa98bd64e4c6b917d06700a375936fd7b86c87d1d123c8c :
+#
+#[C 2024-03-05 09:50:22.619 ServerApp]
+#
+#    To access the server, open this file in a browser:
+#        file:///home/jovyan/.local/share/jupyter/runtime/jpserver-7-open.html
+#    Or copy and paste one of these URLs:
+#        http://2e1b702a0fff:8888/lab?token=4fa98bd64e4c6b917d06700a375936fd7b86c87d1d123c8c
+#        http://127.0.0.1:8888/lab?token=4fa98bd64e4c6b917d06700a375936fd7b86c87d1d123c8c
+
+```
