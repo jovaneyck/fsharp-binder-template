@@ -1,14 +1,3 @@
-//Functions and types
-//The ploeh sets/haskel hierarchy
-//The "regular" world and "elevated" world (a,b,a->b)
-//Let's take a look at such an "elevated" type: Result
-
-
-
-
-
-
-
 type Validation<'a> = Result<'a, string list>
 type Age = Age of int
 type Email = Email of string
