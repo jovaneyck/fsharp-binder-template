@@ -4,14 +4,14 @@ type Email = Email of string
 
 let parseAge (text: string) : Validation<Age> =
     match System.Int32.TryParse text with
-    | false, _ -> Error [ sprintf "<%s> is not a valid age" text ]
+    | false, _ -> Error [ $"<%s{text}> is not a valid age" ]
     | true, parsed -> Ok(Age parsed)
 
 let parseEmail (text: string) : Validation<Email> =
     if text.Contains("@") then
         Ok(Email text)
     else
-        Error [ sprintf "<%s> is not a valid email" text ]
+        Error [ $"<%s{text}> is not a valid email" ]
 
 let okAge = parseAge "12"
 let nokAge = parseAge "jo@gmail.com"
@@ -74,7 +74,7 @@ mkPerson <!> (parseAge "dertien")
 //SMOOSING, flattening, collecting, selectmany'ing ofcourse!
 //This is what the "bind" function is for, it does the same as map but flattens the result:
 //bind :: (a->E(b))->E(a)->E(b)
-let bind (f: ('a -> Validation<'b>)) (a: Validation<'a>) : Validation<'b> =
+let bind (f: 'a -> Validation<'b>) (a: Validation<'a>) : Validation<'b> =
     match a with
     | Ok v -> f v
     | Error e -> Error e
@@ -89,7 +89,7 @@ type ValidatedResultBuilder() =
     member _.Return(x) = Ok x
     member _.Bind(m, f) = bind f m
 
-let valid = new ValidatedResultBuilder()
+let valid = ValidatedResultBuilder()
 
 //This is identical to the bind result, but with nicer syntax!
 valid {
@@ -98,7 +98,7 @@ valid {
     return mkPerson age email
 }
 
-valid {
+valid   {
     let! age = parseAge "invalid"
     let! email = parseEmail "invalid"
     return mkPerson age email
